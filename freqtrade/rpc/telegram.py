@@ -612,7 +612,7 @@ class Telegram(RPCHandler):
                         f"{round_coin_value(curr['est_stake'], curr['stake'], False)}`\n")
                 else:
                     total_dust_currencies += 1
-                    total_dust_level += curr['stake']
+                    total_dust_level += {round_coin_value(curr['est_stake'], curr['stake'], False)
 
             if total_dust_level > 0:
                 curr_output = (f"Not showing {total_dust_currencies} currencies "
