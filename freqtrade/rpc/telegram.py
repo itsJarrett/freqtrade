@@ -598,6 +598,9 @@ class Telegram(RPCHandler):
                     "Starting capital: "
                     f"`{self._config['dry_run_wallet']}` {self._config['stake_currency']}.\n"
                 )
+
+            total_dust_currencies = 0
+            total_dust_level = 0.0
             for curr in result['currencies']:
                 if curr['est_stake'] > balance_dust_level:
                     curr_output = (
@@ -608,8 +611,14 @@ class Telegram(RPCHandler):
                         f"\t`Est. {curr['stake']}: "
                         f"{round_coin_value(curr['est_stake'], curr['stake'], False)}`\n")
                 else:
-                    curr_output = (f"*{curr['currency']}:* not showing <{balance_dust_level} "
-                                   f"{curr['stake']} amount \n")
+                    total_dust_currencies += 1
+                    total_dust_level += curr['stake']
+
+            if total_dust_level > 0:
+                curr_output = (f"Not showing {total_dust_currencies} currencies "
+                               f"each <{balance_dust_level} {self._config['stake_currency']}.\n"
+                               f"*Est. Total:* {total_dust_level}"
+                               f"{self._config['stake_currency']}\n")
 
                 # Handle overflowing message length
                 if len(output + curr_output) >= MAX_TELEGRAM_MESSAGE_LENGTH:
